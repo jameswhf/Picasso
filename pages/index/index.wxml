@@ -1,0 +1,4 @@
+<!--index.wxml-->
+<view class="container">
+  <canvas canvas-id="annotation" class="annotation" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" style="border: 1px solid;"></canvas>
+</view>
