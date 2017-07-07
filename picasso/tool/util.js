@@ -23,5 +23,40 @@ module.exports = {
             return false;
         }
         return true;
+    },
+    /**
+     * 构造继承关系
+     * @param {Function} 子类
+     * @param {Function} 父类
+     */
+    inherits: function (childClass, superClass) {
+        var childOriginPrototype = childClass.prototype;
+        function F () {}
+        F.prototype = superClass.prototype;
+        childClass.prototype = new F();
+        for ( var prop in childOriginPrototype) {
+            childClass.prototype[prop] = childOriginPrototype[prop];
+        }
+        childClass.prototype.constructor = childClass;
+        childClass.superClass = superClass;
+    },
+    /**
+     * 实现对象的深拷贝
+     */
+    clone: function (instance) {
+        if (null == instance || 'object' != typeof instance) {
+            return instance;
+        }
+        var self = this;
+        if (instance instanceof Array) {
+            var arr = [];
+            instance.forEach(item => arr.push(self.clone(item)));
+            return arr;
+        }
+        var obj = {};
+        this.each(instance, (value, key) => {
+            obj[key] = self.clone(value);
+        });
+        return obj;
     }
 };

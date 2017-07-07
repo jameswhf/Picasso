@@ -7,3 +7,17 @@
   width: 300px;
   height: 300px;
 }
+.line-mode {
+  background-color: #999999;
+}
+.arrow-mode {
+  background-color: #999999;
+}
+.annotation-action {
+  margin-top: 30px;
+  width: 300px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

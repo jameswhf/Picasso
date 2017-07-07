@@ -11,7 +11,7 @@ ShapeManager.prototype = {
     },
     add: function (shape) {
         shape._picasso = this._picasso;
-        this.shapeList.add(shape);
+        this.shapeList.push(shape);
         shape.dirty();
     },
     remove: function (shape) {

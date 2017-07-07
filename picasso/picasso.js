@@ -25,13 +25,24 @@ function Picasso (page, canvas, eventMap) {
 
 Picasso.prototype = {
     constructor: Picasso,
+    addShape: function (shape) {
+        this.shapeManager.add(shape);
+    },
+    removeShape: function (shape) {
+        this.shapeManager.remove(shape);
+    },
     clear: function () {
         this.shapeManager.reset();
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         this.ctx.draw();
     },
     render: function() {
-        this.shapeManager
+        // this.shapeManager
+        var shapeList = this.shapeManager.shapeList;
+        for (var pos = 0; pos < shapeList.length; pos++) {
+          shapeList[pos].paint();
+        }
+        this.ctx.draw();
     },
 
     /**
