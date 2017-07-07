@@ -1,6 +1,9 @@
 <!--index.wxml-->
 <view class="container">
-  <canvas canvas-id="annotation" class="annotation" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" style="border: 1px solid;"></canvas>
+  <canvas canvas-id="chart" class="chart" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" style="border: 1px solid;"></canvas>
+</view>
+<view class="annotation-container">
+  <canvas canvas-id="annotation" class="annotation" bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" style="border: 1px solid green;"></canvas>
   <view class="annotation-action">
     <button class="{{mode == 'line' ? 'line-mode':''}}" bindtap="tapLine">划线</button>
     <button class="{{mode == 'arrow' ? 'arrow-mode':''}}" bindtap="tapArrow">箭头</button>
