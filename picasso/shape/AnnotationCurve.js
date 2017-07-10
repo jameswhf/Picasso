@@ -3,6 +3,7 @@ const Shape = require('../Shape');
 
 var AnnotationCurve = Shape.extends({
     type: 'AnnotationCurve',
+    interactive: false,
     path: [],
     painted_count: 0,
     cache_flag: 0,
@@ -12,6 +13,7 @@ var AnnotationCurve = Shape.extends({
         }
         this.cache_flag++;
         this.path.push(point);
+        console.log(this.cache_flag);
         if (this.cache_flag >= max_cache_count) {
             this.incrementalPaint();
             this.cache_flag = 0;

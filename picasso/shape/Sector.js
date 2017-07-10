@@ -1,4 +1,4 @@
-
+const Util = require('../tool/util');
 const Shape = require('../Shape');
 
 var Sector = Shape.extends({
@@ -17,6 +17,9 @@ var Sector = Shape.extends({
         ctx.save();
         ctx.beginPath();
         ctx.setFillStyle(style.fill);
+        if (this.translate) {
+            ctx.translate(this.translate.x, this.translate.y);
+        }
         ctx.translate(center.x, center.y);
         var sCos = Math.cos(startAngle), sSin = Math.sin(startAngle); 
         ctx.moveTo(innerRadius * sCos, innerRadius * sSin);
@@ -30,9 +33,22 @@ var Sector = Shape.extends({
         ctx.fill();
         ctx.restore();
     },
-    tap: function (event) {
-
-    }
+    isHitInside: function (touch) {
+        var offsetX = touch.x - this.center.x,
+            offsetY = touch.y - this.center.y,
+            radius = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
+        if (radius < this.innerRadius || radius > this.outerRadius) {
+            return false;
+        }
+        var angle = Util.caculateAngle(offsetX, offsetY, radius);
+        if (angle < 0) {
+            angle += Math.PI * 2;
+        }
+        if (angle < this.startAngle || angle > this.endAngle) {
+            return false;
+        }
+        return true;
+    },
 });
 
 module.exports = Sector;

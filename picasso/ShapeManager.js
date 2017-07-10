@@ -20,6 +20,20 @@ ShapeManager.prototype = {
             this.shapeList.splice(index, 1);
         }
     },
+    addGroup: function (group) {
+        var self = this;
+        group.shapes.forEach(shape => {
+            shape._picasso = self._picasso;
+            self.shapeList.push(shape);
+        });
+        this._picasso.render();
+    },
+    removeGroup: function (group) {
+        var self = this;
+        group.shapes.forEach(shape => {
+            self.remove(shape);
+        });
+    },
     reset: function () {
         this.shapeList = [];
     }

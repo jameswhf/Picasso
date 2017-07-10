@@ -58,5 +58,24 @@ module.exports = {
             obj[key] = self.clone(value);
         });
         return obj;
+    },
+    /**
+     * 计算 startPoint 跟 endPoint 间的角度
+     * @param {number} offsetX : endPoint.x - startPoint.x 
+     * @param {number} offsetY : endPoint.y - startPoint.y
+     * @param {number} radius  : endPoint 与 startPoint 间的距离
+     */
+    caculateAngle: function (offsetX, offsetY, radius) {
+        var angle = Math.acos(offsetX /radius);
+        if (offsetX >= 0) { //1、4象限
+            if (offsetY < 0) {
+                angle = -angle;
+            }
+        } else {//对于2、3象限
+            if (offsetY < 0) {
+                angle = 2 * Math.PI - angle;
+            }
+        }
+        return angle;
     }
 };

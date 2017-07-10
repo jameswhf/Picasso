@@ -8,14 +8,21 @@ const defaultEventMap = {
     'longtap': 'longTap'
 };
 
-function packageEvent(event){
-    var touch = event.touches[0];
+function unifyTouch(touch) {
+    if (touch.x != undefined) {
+        return touch;
+    }
+    return {x: touch.clientX, y: touch.clientY};
+}
+
+function packageEvent(eventName, event){
+    var touch = unifyTouch(event.touches[0]);
     //根据event 找到对应可以响应的 shape
     var shapeList = this._shapeManager.shapeList;
-    var len = shapeList.len;
+    var len = shapeList.length;
     for (var pos = len - 1; pos >= 0; pos--) {
         var shape = shapeList[pos];
-        if (shape.canRespondTouch(touch)) {
+        if (shape.canRespondTouch(eventName, touch)) {
             return {target: shape, touch: touch};
         }
     }
@@ -24,7 +31,7 @@ function packageEvent(event){
 
 const handlerMap = {
     'touchstart': function (e) {
-        let event = packageEvent.apply(this, [e]);
+        let event = packageEvent.apply(this, ['touchstart', e]);
         this._touchTarget = event.target;
         if (this._touchTarget.trigger) {
             this._touchTarget.trigger('touchstart', event);
@@ -44,11 +51,11 @@ const handlerMap = {
         this._touchTarget = null;
     },
     'tap': function (e) {
-        let event = packageEvent.apply(this, [e]);
+        let event = packageEvent.apply(this, ['tap', e]);
         event.target.trigger && event.target.trigger('tap', event);
     },
     'longtap': function (e) {
-        let event = packageEvent.apply(this, [e]);
+        let event = packageEvent.apply(this, ['longtap', e]);
         event.target.trigger && event.target.trigger('longtap', event);
     }
 };

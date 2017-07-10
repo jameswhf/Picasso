@@ -31,6 +31,12 @@ Picasso.prototype = {
     removeShape: function (shape) {
         this.shapeManager.remove(shape);
     },
+    addGroup: function (group) {
+        this.shapeManager.addGroup(group)        
+    },
+    removeGroup: function (group) {
+        this.shapeManager.removeGroup(group);
+    },
     clear: function () {
         this.shapeManager.reset();
         this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
@@ -53,6 +59,11 @@ Picasso.prototype = {
      */
     on: function (originEventName, func, context) {
         this.eventHandler.on(originEventName, func, context);
+    },
+    /**
+     * 当canvas中没有shape响应事件时, 会触发该 trigger函数, event.target 为picasso实例本身
+     */
+    trigger: function(eventName, event) {
     }
 };
 

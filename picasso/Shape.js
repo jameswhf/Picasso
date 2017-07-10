@@ -40,10 +40,10 @@ Shape.prototype = {
     /**
      * 判断是否可以响应touch
      * @param {String}, 事件名称
-     * @param {Object}, touch对象{ x: , y: }
+     * @param {Object}, touch对象 { x: , y: }
      */
     canRespondTouch: function (eventName, touch) {
-        return this.visible && this.interative && this[eventName] && this.isHitInside(touch);
+        return this.visible && this.interactive && this[eventName] && this.isHitInside(touch);
     },
     /**
      * touch位置(x, y)检测

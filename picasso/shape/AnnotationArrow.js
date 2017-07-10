@@ -5,30 +5,11 @@ const arrow_height_element = {
     max: 15
 };
 const Shape = require('../Shape');
-
-/**
- * 计算 startPoint 跟 endPoint 间的角度
- * @param {number} offsetX : endPoint.x - startPoint.x 
- * @param {number} offsetY : endPoint.y - startPoint.y
- * @param {number} radius  : endPoint 与 startPoint 间的距离
- */
-function caculateAngle(offsetX, offsetY, radius) {
-    var angle = Math.acos(offsetX /radius);
-    if (offsetX >= 0) { //1、4象限
-        if (offsetY < 0) {
-            angle = -angle;
-        }
-    } else {//对于2、3象限
-        if (offsetY < 0) {
-            angle = 2 * Math.PI - angle;
-        }
-    }
-    return angle;
-}
-
+const util = require('../tool/util');
 
 var AnnotationArrow = Shape.extends({
     type: 'AnnotationArrow',
+    interactive: false,
     startPoint: null,
     endPoint: null,
     updatePoint: function (point) {
@@ -56,7 +37,7 @@ var AnnotationArrow = Shape.extends({
             if (radius > 50) {
                 element_height = radius > 150 ? arrow_height_element.max : arrow_height_element.medium;
             }
-            const angle = caculateAngle(offsetX, offsetY, radius);
+            const angle = util.caculateAngle(offsetX, offsetY, radius);
             /**
              * 先按距离绘制一个与x轴方向平行的箭头, 然后在旋转
              * 当距离小于 2 * element_height 时只画箭头
