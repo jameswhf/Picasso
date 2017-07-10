@@ -7,28 +7,6 @@ const arrow_height_element = {
 const Shape = require('../Shape');
 
 /**
- * 根据 start与end的角度、endPoint与startPoint间的距离radius、箭头高度element
- * @param {number} angle
- * @param {*} radius:
- * @param {*} width 
- */
-function getSymmetricPoints(startPoint, angle, radius, height) {
-    var deltaAngle = Math.atan(height/radius); //对称两个点相对于start、end角度的偏移角度
-    var left_angle = angle + deltaAngle,
-        right_angle = angle - deltaAngle;
-    return [
-        {
-            x: startPoint.x + Math.ceil(radius * Math.cos(left_angle)),
-            y: startPoint.y + Math.ceil(radius * Math.sin(left_angle))
-        },
-        {
-            x: startPoint.x + Math.ceil(radius * Math.cos(right_angle)),
-            y: startPoint.y + Math.ceil(radius * Math.sin(right_angle))
-        }
-    ];
-
-}
-/**
  * 计算 startPoint 跟 endPoint 间的角度
  * @param {number} offsetX : endPoint.x - startPoint.x 
  * @param {number} offsetY : endPoint.y - startPoint.y
@@ -79,22 +57,29 @@ var AnnotationArrow = Shape.extends({
                 element_height = radius > 150 ? arrow_height_element.max : arrow_height_element.medium;
             }
             const angle = caculateAngle(offsetX, offsetY, radius);
-            var symmetricPoints = getSymmetricPoints(startPoint, angle, radius, element_height/2);
+            /**
+             * 先按距离绘制一个与x轴方向平行的箭头, 然后在旋转
+             * 当距离小于 2 * element_height 时只画箭头
+             */
             const ctx = this._picasso.ctx;
             ctx.save();
             ctx.beginPath();
             ctx.setFillStyle('red');
-            ctx.moveTo(startPoint.x, startPoint.y);
-            ctx.lineTo(symmetricPoints[0].x, symmetricPoints[0].y);
-            ctx.lineTo(symmetricPoints[1].x, symmetricPoints[1].y);
-            ctx.closePath();
-            ctx.fill();
-            ctx.beginPath();
-            ctx.translate(endPoint.x, endPoint.y);
+            ctx.translate(startPoint.x, startPoint.y);
             ctx.rotate(angle);
-            ctx.moveTo(0, -element_height);
-            ctx.lineTo(0, element_height);
-            ctx.lineTo(2 * element_height, 0);
+            if (radius <= 2 * element_height) { //只画箭头
+                ctx.moveTo(0, element_height);
+                ctx.lineTo(2 * element_height, 0);
+                ctx.lineTo(0, - element_height);
+            } else { //画箭柄、箭头
+                ctx.moveTo(0, 0);
+                var joinPoint = {x: radius - 2 * element_height, y: 0};
+                ctx.lineTo(joinPoint.x, joinPoint.y + element_height / 2 );
+                ctx.lineTo(joinPoint.x, joinPoint.y + element_height);
+                ctx.lineTo(radius, 0);
+                ctx.lineTo(joinPoint.x, joinPoint.y - element_height);
+                ctx.lineTo(joinPoint.x, joinPoint.y - element_height / 2 );
+            }
             ctx.closePath();
             ctx.fill();
             ctx.restore();
