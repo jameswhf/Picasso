@@ -5,17 +5,41 @@ const AnnotationCurve = require('../../picasso/shape/AnnotationCurve');
 const AnnotationArrow = require('../../picasso/shape/AnnotationArrow');
 const Sector = require('../../picasso/shape/Sector');
 const Group = require('../../picasso/Group');
+const Tooltip = require('../../picasso/shape/Tooltip');
 
 Page({
   data: {
   },
   pi: null,
   currentShape: null,
-
+  onShareAppMessage: function(res) {
+    return {
+      title: '饼图分享测试',
+      path: '/pages/index/index?id=1234',
+      success: function(res) {
+        console.log(res);
+      },
+      fail: function(error) {
+        console.log(error);
+      }
+    };
+  },
   onLoad: function () {
+    wx.showShareMenu({
+      withShareTicket: true,
+      success: function(res) {
+        console.log(res);
+      },
+      fail: function(res) {
+        console.log(res);
+      }
+    });
     var chartCanvas = {id: 'chart', width: 350, height: 300};
     let chartPI = picasso.init(this, chartCanvas);
-    const radius = 100;
+    chartPI.tap = function () {
+      this.setTooltip();
+    }
+    const radius = 130;
     const list = [{percent: 0.18}, {percent: 0.02}, {percent: 0.39}, {percent: 0.21}, {percent: 0.2}];
     const colors = ['#7CB5EC', '#434348', '#90ED7D', '#F7A35C', '#8085E9', '#F15C80'];
     var sectorGroup = new Group();
@@ -29,7 +53,7 @@ Page({
         style: {
           fill: colors[index]
         },
-        touchstart: function () {
+        tap: function (event) {
           if (sectorGroup.selectedShape != this) {
             if (sectorGroup.selectedShape) {
               sectorGroup.selectedShape.translate = null;
@@ -37,6 +61,17 @@ Page({
             sectorGroup.selectedShape = this;
             var middleAngle = (this.startAngle + this.endAngle) / 2.0;
             this.translate = {x: 10 * Math.cos(middleAngle), y: 10 * Math.sin(middleAngle)};
+            chartPI.setTooltip({
+              type: Tooltip.types.DEFAULT,
+              data: {
+                title: list[index].percent
+              },
+              position: {
+                anchorPoint: event.touch,
+                bounds: {x: 0, y: 0, w: 200, h: 200}
+              },
+              referer: this,
+            });
             this._picasso.render();
           }
         }

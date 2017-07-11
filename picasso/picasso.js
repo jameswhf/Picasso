@@ -48,9 +48,17 @@ Picasso.prototype = {
         for (var pos = 0; pos < shapeList.length; pos++) {
           shapeList[pos].paint();
         }
+        if (this.shapeManager.tooltip) {
+            this.shapeManager.tooltip.paint();
+        }
         this.ctx.draw();
     },
-
+    /**
+     * @param {Object}， tooltipConfig为null或者undefined时, 表示要隐藏tooltip
+     */
+    setTooltip: function(tooltipConfig) {
+        this.shapeManager.setTooltip(tooltipConfig);
+    },
     /**
      * 可以通过 此方法替换 canvas 的默认事件监听方法 
      * @param originEventName 指 wxml 里 canvas中绑定的事件的名字
@@ -64,6 +72,7 @@ Picasso.prototype = {
      * 当canvas中没有shape响应事件时, 会触发该 trigger函数, event.target 为picasso实例本身
      */
     trigger: function(eventName, event) {
+        this[eventName] && this[eventName](event);
     }
 };
 

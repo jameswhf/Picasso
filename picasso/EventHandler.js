@@ -8,15 +8,21 @@ const defaultEventMap = {
     'longtap': 'longTap'
 };
 
-function unifyTouch(touch) {
+function touchFromEvent(event) {
+    var touch = event.touches[0];
     if (touch.x != undefined) {
         return touch;
     }
-    return {x: touch.clientX, y: touch.clientY};
+    var offset = {left: 0, right: 0};
+    if (event.target) {
+        offset.left = event.target.offsetLeft;
+        offset.top = event.target.offsetTop;
+    }
+    return {x: touch.clientX - offset.left, y: touch.clientY - offset.top};
 }
 
 function packageEvent(eventName, event){
-    var touch = unifyTouch(event.touches[0]);
+    var touch = touchFromEvent(event);
     //根据event 找到对应可以响应的 shape
     var shapeList = this._shapeManager.shapeList;
     var len = shapeList.length;
