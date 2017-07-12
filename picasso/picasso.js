@@ -1,19 +1,12 @@
 var ShapeManager = require('./ShapeManager');
 var EventHandler = require('./EventHandler');
-
-
-var picasso = {};
-
-picasso.init = function (page, canvas, eventMap) {
-    const pi =  new Picasso(page, canvas, eventMap);
-    return pi;
-}
+var Platform = require('./tool/platform');
 
 
 function Picasso (page, canvas, eventMap) {
     this.page = page;
     this.id = canvas.id;
-    this.ctx = wx.createCanvasContext(canvas.id);
+    this.ctx = Platform.crossPlatform(canvas.context);
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
     this.canvasName = canvas.name;
@@ -43,7 +36,7 @@ Picasso.prototype = {
         this.ctx.draw();
     },
     render: function() {
-        // this.shapeManager
+        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         var shapeList = this.shapeManager.shapeList;
         for (var pos = 0; pos < shapeList.length; pos++) {
           shapeList[pos].paint();
@@ -76,4 +69,4 @@ Picasso.prototype = {
     }
 };
 
-module.exports = picasso;
+module.exports = Picasso;

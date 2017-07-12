@@ -1,11 +1,7 @@
 //index.js
 //获取应用实例
-const picasso = require('../../picasso/picasso');
-const AnnotationCurve = require('../../picasso/shape/AnnotationCurve');
-const AnnotationArrow = require('../../picasso/shape/AnnotationArrow');
-const Sector = require('../../picasso/shape/Sector');
-const Group = require('../../picasso/Group');
-const Tooltip = require('../../picasso/shape/Tooltip');
+const picasso = require('../../picasso/index');
+const {AnnotationCurve, AnnotationArrow, Sector, Group, Tooltip} = picasso;
 
 Page({
   data: {
@@ -34,11 +30,8 @@ Page({
         console.log(res);
       }
     });
-    var chartCanvas = {id: 'chart', width: 350, height: 300};
+    var chartCanvas = {id: 'chart', width: 350, height: 300, context: wx.createCanvasContext('chart')};
     let chartPI = picasso.init(this, chartCanvas);
-    chartPI.tap = function () {
-      this.setTooltip();
-    }
     const radius = 130;
     const list = [{percent: 0.18}, {percent: 0.02}, {percent: 0.39}, {percent: 0.21}, {percent: 0.2}];
     const colors = ['#7CB5EC', '#434348', '#90ED7D', '#F7A35C', '#8085E9', '#F15C80'];
@@ -53,7 +46,7 @@ Page({
         style: {
           fill: colors[index]
         },
-        tap: function (event) {
+        touchstart: function (event) {
           if (sectorGroup.selectedShape != this) {
             if (sectorGroup.selectedShape) {
               sectorGroup.selectedShape.translate = null;
@@ -80,12 +73,10 @@ Page({
       flagAngle = sector.endAngle;
     });
     chartPI.addGroup(sectorGroup);
-    return;
 
-
-    var canvas = { id: 'annotation', width: 375, height: 400 };
+    var canvas = { id: 'annotation', width: 375, height: 400 , context: wx.createCanvasContext('annotation')};
     var page = this;
-    let pi = picasso.init(this, canvas, {touchstart: 'aTouchMove', touchmove: 'aTouchMove', touchend: 'aTouchEnd'});
+    let pi = picasso.init(this, canvas, {touchstart: 'aTouchStart', touchmove: 'aTouchMove', touchend: 'aTouchEnd'});
     pi.trigger = function (eventName, event) {
       if (!page.data.mode) {
         return;

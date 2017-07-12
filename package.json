@@ -1,0 +1,26 @@
+{
+  "name": "picasso",
+  "version": "1.0.0",
+  "description": "canvas painting tool",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jameswhf/Picasso.git"
+  },
+  "keywords": [
+    "canvas",
+    "wechat"
+  ],
+  "author": "wanghefeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jameswhf/Picasso/issues"
+  },
+  "homepage": "https://github.com/jameswhf/Picasso#readme",
+  "devDependencies": {
+    "rollup-plugin-commonjs": "^8.0.2"
+  }
+}

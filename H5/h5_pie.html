@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Picasso.js Demo</title>
+    <script type="text/javascript" src="./../picasso_browser.js">  </script>
+</head>
+<body>
+    <div class="chart-container"> 
+        <canvas id="chart-canvas" width="600" height="650" style="border:1px solid #000000; width: 600px; height: 650px">
+        </canvas>
+    </div> 
+</body>
+
+<script type="text/javascript"> 
+    (function() {
+        window.onload = function(e) {
+            // console.log(Chart)
+            // console.log(Chart.drawCharts)
+            var {Group, Sector, Tooltip} = picasso;
+            var canvasId = 'chart-canvas'
+            var canvasDom = document.getElementById(canvasId);
+            var context = canvasDom.getContext('2d');
+            var chartPI = picasso.init(canvasDom, {id: canvasId, width: 1800, height: 1950, context:document.getElementById(canvasId).getContext('2d')})
+            const radius = 130;
+            const list = [{percent: 0.18}, {percent: 0.02}, {percent: 0.39}, {percent: 0.21}, {percent: 0.2}];
+            const colors = ['#7CB5EC', '#434348', '#90ED7D', '#F7A35C', '#8085E9', '#F15C80'];
+            var sectorGroup = new Group();
+            var flagAngle = 0;
+            list.forEach((item, index) => {
+            var sector = new Sector({
+                center: {x: 150, y: 150},
+                outerRadius: radius,
+                startAngle: flagAngle,
+                endAngle: flagAngle + Math.PI * 2 * item.percent,
+                style: {
+                fill: colors[index]
+                },
+                onmousemove: function (event) {
+                    if (sectorGroup.selectedShape != this) {
+                        if (sectorGroup.selectedShape) {
+                        sectorGroup.selectedShape.translate = null;
+                        }
+                        sectorGroup.selectedShape = this;
+                        var middleAngle = (this.startAngle + this.endAngle) / 2.0;
+                        this.translate = {x: 10 * Math.cos(middleAngle), y: 10 * Math.sin(middleAngle)};
+                        chartPI.setTooltip({
+                        type: Tooltip.types.DEFAULT,
+                        data: {
+                            title: list[index].percent
+                        },
+                        position: {
+                            anchorPoint: event.touch,
+                            bounds: {x: 0, y: 0, w: 200, h: 200}
+                        },
+                        referer: this,
+                        });
+                        this._picasso.render();
+                    }
+                },
+                onmouseout: function (event) {
+                    self.translate = null;
+                    this.dirty();
+                },
+                onclick: function (event) {
+                    if (sectorGroup.selectedShape != this) {
+                        if (sectorGroup.selectedShape) {
+                        sectorGroup.selectedShape.translate = null;
+                        }
+                        sectorGroup.selectedShape = this;
+                        var middleAngle = (this.startAngle + this.endAngle) / 2.0;
+                        this.translate = {x: 10 * Math.cos(middleAngle), y: 10 * Math.sin(middleAngle)};
+                        chartPI.setTooltip({
+                        type: Tooltip.types.DEFAULT,
+                        data: {
+                            title: list[index].percent
+                        },
+                        position: {
+                            anchorPoint: event.touch,
+                            bounds: {x: 0, y: 0, w: 200, h: 200}
+                        },
+                        referer: this,
+                        });
+                        this._picasso.render();
+                    }
+                }
+            });
+            sectorGroup.addShape(sector);
+            flagAngle = sector.endAngle;
+            });
+            chartPI.addGroup(sectorGroup);
+        } 
+    })();
+</script>
+
+</html>

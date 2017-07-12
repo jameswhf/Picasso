@@ -1,6 +1,6 @@
 const util = require('./tool/util');
 
-const defaultEventMap = {
+const wxEventMap = {
     'touchstart': 'touchStart',
     'touchmove': 'touchMove',
     'touchend': 'touchEnd',
@@ -21,7 +21,7 @@ function touchFromEvent(event) {
     return {x: touch.clientX - offset.left, y: touch.clientY - offset.top};
 }
 
-function packageEvent(eventName, event){
+function packageWXEvent(eventName, event){
     var touch = touchFromEvent(event);
     //根据event 找到对应可以响应的 shape
     var shapeList = this._shapeManager.shapeList;
@@ -35,9 +35,23 @@ function packageEvent(eventName, event){
     return {target: this._picasso, touch: touch};
 }
 
-const handlerMap = {
+function packageH5Event(eventName, event) {
+    var touch = {x:event.x, y:event.y};
+    var shapeList = this._shapeManager.shapeList;
+    var len = shapeList.length;
+    for (var pos = len - 1; pos >= 0; pos--) {
+        var shape = shapeList[pos];
+        if (shape.canRespondTouch(eventName, touch)) {
+            return {target: shape, touch: touch};
+        }
+    }
+    return {target: this._picasso, touch: touch};
+}
+
+
+const wxHandlerMap = {
     'touchstart': function (e) {
-        let event = packageEvent.apply(this, ['touchstart', e]);
+        let event = packageWXEvent.apply(this, ['touchstart', e]);
         this._touchTarget = event.target;
         if (this._touchTarget.trigger) {
             this._touchTarget.trigger('touchstart', event);
@@ -57,23 +71,52 @@ const handlerMap = {
         this._touchTarget = null;
     },
     'tap': function (e) {
-        let event = packageEvent.apply(this, ['tap', e]);
+        console.log(e);
+        let event = packageWXEvent.apply(this, ['tap', e]);
         event.target.trigger && event.target.trigger('tap', event);
     },
     'longtap': function (e) {
-        let event = packageEvent.apply(this, ['longtap', e]);
+        let event = packageWXEvent.apply(this, ['longtap', e]);
         event.target.trigger && event.target.trigger('longtap', event);
     }
 };
 
-function EventHandler (picasso, shapeManager, page, eventMap = defaultEventMap) {
+const h5HandlerMap = {
+    'onclick': function (e) {
+        var event = packageH5Event.apply(this, ['onclick', e]);
+        event.target.trigger && event.target.trigger('onclick', event);
+    },
+    'ondblclick': function (e) {
+        var event = packageH5Event.apply(this, ['ondblclick', e]);
+        event.target.trigger && event.target.trigger('ondblclick', event);
+    },
+    'onmouseover': function (e) { //Canvas是第一响应者
+        this._picasso.trigger('onmouseover', event);
+    },
+    'onmousemove': function (e) {
+        var event = packageH5Event.apply(this, ['onmousemove', e]);
+        event.target && event.target.trigger('onmousemove', event);
+    },
+    'onmouseout': function (e) {
+        this._picasso.trigger('onmouseout', event);
+    },
+    //暂不支持 onmousedown, onmouseup
+};
+
+function EventHandler (picasso, shapeManager, page, eventMap = wxEventMap) {
     this._page = page;
     this._picasso = picasso;
     this._shapeManager = shapeManager;
     const self = this;
-    util.each(eventMap, function(originName, name){
-        page[originName] = util.bind(handlerMap[name], self);
-    });
+    if (typeof wx == 'undefined') { 
+        util.each(h5HandlerMap, function(handler, name){
+            page[name] = util.bind(handler, self);
+        });
+    } else {
+        util.each(eventMap, function(originName, name){
+            page[originName] = util.bind(wxHandlerMap[name], self);
+        });
+    }
 };
 
 EventHandler.prototype = {
